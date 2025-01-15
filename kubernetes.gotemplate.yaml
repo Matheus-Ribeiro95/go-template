@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+spec:
+  selector:
+    matchLabels:
+      app: database
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: template-scylladb
+          image: "registry.gitlab.com/matheus-ribeiro95/public-images/template:scylladb"
+          ports:
+            - containerPort: 9042
+      imagePullSecrets:
+        - name: gitlabregistry
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+spec:
+  selector:
+    app: database
+  ports:
+    - protocol: TCP
+      port: 9042
+      targetPort: 9042
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go
+spec:
+  selector:
+    matchLabels:
+      app: go
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: go
+    spec:
+      containers:
+        - name: template-go
+          image: "registry.gitlab.com/matheus-ribeiro95/public-images/template:go-1.0.0"
+          env:
+            - name: SCYLLADB_URL
+              value: "database"
+          ports:
+            - containerPort: 8080
+      imagePullSecrets:
+        - name: gitlabregistry
