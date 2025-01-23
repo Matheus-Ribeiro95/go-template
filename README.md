@@ -16,7 +16,7 @@ Para execução completa, antes execute a imagem da database:
 
 Instale as dependências:
 
-    go install
+    go mod download
 
 Execute o código:
 
